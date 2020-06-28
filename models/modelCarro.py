@@ -16,6 +16,7 @@ class Carro(db.Model):
         'marcas.id'), nullable=False)
 
     marca = db.relationship('Marca')
+    
 
     def to_json(self):
         json_carros = {

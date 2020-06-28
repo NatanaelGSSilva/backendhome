@@ -4,18 +4,25 @@ from banco import db
 from resources.carros import carros
 from resources.marcas import marcas
 from resources.usuarios import usuarios
+from resources.propostas import propostas
 from flask_jwt_extended import JWTManager
 from blacklist import blacklist
 import smtplib
+from flask_cors import CORS
 
 app = Flask(__name__)
+
 app.config.from_object(config)
 db.init_app(app)
 jwt = JWTManager(app)
+# libera todas as rotas (não éa melhor opção, em termos de segurança)
+# A melhor forma, é vista no exemplo anterior, indicar quais rotas devem ser liberadas para  acesso
+CORS(app)
 
 app.register_blueprint(carros)
 app.register_blueprint(marcas)
 app.register_blueprint(usuarios)
+app.register_blueprint(propostas)
 
 
 @jwt.token_in_blacklist_loader
@@ -32,13 +39,15 @@ def raiz():
 
 @app.route('/envia_email')
 def envia():
-    server = smtplib.SMTP('smtp.gmail.com',587)
+    server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login('conta.teste.laravel@gmail.com','conta#teste#laravel')
+    server.login('conta.teste.laravel@gmail.com', 'conta#teste#laravel')
     server.set_debuglevel(1)
-    msg = 'Subject: Teste PI2\nÓla Teste de Envio de e-mail pelo Python\nÉ bom esse Python!!'.encode('utf-8')
-    server.sendmail('conta.teste.laravel@gmail.com','dasilvanatanael700@gmail.com', msg)
-    server.quit()    
+    msg = 'Subject: Teste PI2\nÓla Teste de Envio de e-mail pelo Python\nÉ bom esse Python!!'.encode(
+        'utf-8')
+    server.sendmail('conta.teste.laravel@gmail.com',
+                    'dasilvanatanael700@gmail.com', msg)
+    server.quit()
     return "OK! E-mail Enviado."
 
 

@@ -13,7 +13,7 @@ def listagem():
 
 
 @marcas.route('/marcas', methods=['POST'])
-# @jwt_required
+@jwt_required
 def inclusao():
     marca = Marca.from_json(request.json)
     db.session.add(marca)
