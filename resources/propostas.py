@@ -3,6 +3,8 @@ from banco import db
 from models.modelProposta import Proposta
 from models.modelCarro import Carro
 from flask_jwt_extended import jwt_required
+from datetime import datetime, timedelta
+import smtplib
 
 propostas = Blueprint('propostas', __name__)
 
@@ -18,6 +20,21 @@ def listagem():
 # @jwt_required
 def inclusao():
     proposta = Proposta.from_json(request.json)
+
+    # server = smtplib.SMTP('smtp.gmail.com', 587)
+    # server.starttls()
+    # server.login('dasilvanatanael700@gmail.com', 'senha')
+    # server.set_debuglevel(1)
+    # nomePessoa = request.json['nomePessoa']
+    # email = request.json['email']
+    # telefone = request.json['telefone']
+    # lance = request.json['lance']
+    # modelo = request.json['carro_id']
+    # msg = 'Ola senhor(a) ' + nomePessoa + 'o seu lance foi ' + str(lance) + ', tal proposta sera avaliada e retornaremos por email ' + \
+    #     email + ' ou telefone ' + telefone + 'sobre o veiculo' + str(modelo)
+    # server.sendmail('f{email}', email, msg)
+    # server.quit()
+
     db.session.add(proposta)
     db.session.commit()
     return jsonify(proposta.to_json()), 201
@@ -78,21 +95,35 @@ def estatisticas():
         return jsonify({'numLance': numLance}), 200
 
 
-@propostas.route('/propostas/estatistica/total')
-def totalPropostas():
-    propostas = Proposta.query.count()
+@propostas.route('/propostas/modelos')
+def carrosgraf():
+    total = db.session.query(db.func.count(
+        Proposta.carro_id)).group_by(Proposta.carro_id).all()
+    propostas = db.session.query(Carro.modelo, db.func.count(
+        Proposta.carro_id)/2).group_by(Carro.modelo).all()
+    print(propostas)
+    print(total)
+    num = 0
+    lista = []
+    for proposta in propostas:
+        lista.append({'modelo': proposta[0], 'num': total[num][0]})
+        num = +1
 
-    return jsonify({'total': propostas})
+    print(lista)
+    return jsonify(lista), 201
 
 
-@propostas.route('/propostas/estatistica/contagem/maior')
-def contagemMaior():
-    propostas = Proposta.query.order_by(Proposta.lance.desc()).limit(1).all()
+@propostas.route('/cadastros/propostas')
+def propostascad():
+    propostas = db.session.query(db.func.year(Proposta.data_proposta)+'-'+db.func.month(Proposta.data_proposta), db.func.count(Proposta.id)) \
+        .group_by(db.func.year(Proposta.data_proposta)+'-'+db.func.month(Proposta.data_proposta)) \
+        .filter(Proposta.data_proposta > datetime.today() - timedelta(365))
+    print(propostas)
 
-    return jsonify([proposta.to_json() for proposta in propostas])
+    lista = []
+    for proposta in propostas:
+        lista.append({'data': proposta[0], 'num': proposta[1]})
 
-# @propostas.route('/propostas/estatistica/contagem/menor')
-# def contagemMenor():
-#     Propostas = Proposta.query.order_by(Proposta.lance.asc()).limit(1).all()
+    print(lista)
 
-#     return jsonify([proposta.to_json() for proposta in propostas])
+    return jsonify(lista), 201

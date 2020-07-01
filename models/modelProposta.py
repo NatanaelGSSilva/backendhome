@@ -27,8 +27,6 @@ class Proposta(db.Model):
             'telefone': self.telefone,
             'email': self.email,
             'modelo': self.carro.modelo,
-            'preco': self.carro.preco,
-            'ano': self.carro.ano,
             'carro_id': self.carro_id
         }
         return json_propostas
@@ -37,4 +35,7 @@ class Proposta(db.Model):
     def from_json(json_propostas):
         lance = json_propostas.get('lance')
         carro_id = json_propostas.get('carro_id')
+        nomePessoa = json_propostas.get('nomePessoa')
+        telefone = json_propostas.get('telefone')
+        email = json_propostas.get('email')
         return Proposta(lance=lance, carro_id=carro_id, nomePessoa=nomePessoa, telefone=telefone, email=email)
