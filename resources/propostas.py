@@ -4,6 +4,7 @@ from models.modelProposta import Proposta
 from models.modelCarro import Carro
 from flask_jwt_extended import jwt_required
 from datetime import datetime, timedelta
+# from flask_cors import CORS, cross_origin
 import smtplib
 
 propostas = Blueprint('propostas', __name__)
@@ -18,12 +19,13 @@ def listagem():
 
 @propostas.route('/propostas', methods=['POST'])
 # @jwt_required
+# @cross_origin()
 def inclusao():
     proposta = Proposta.from_json(request.json)
 
     # server = smtplib.SMTP('smtp.gmail.com', 587)
     # server.starttls()
-    # server.login('dasilvanatanael700@gmail.com', 'senha')
+    # server.login('email', 'senha')
     # server.set_debuglevel(1)
     # nomePessoa = request.json['nomePessoa']
     # email = request.json['email']
@@ -37,6 +39,29 @@ def inclusao():
 
     db.session.add(proposta)
     db.session.commit()
+    return jsonify(proposta.to_json()), 201
+
+
+@propostas.route('/propostas/aceitar', methods=['POST'])
+# @jwt_required
+def aceitar():
+    proposta = Proposta.from_json(request.json)
+
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login('email', 'senha')
+    server.set_debuglevel(1)
+    nomePessoa = request.json['nomePessoa']
+    email = request.json['email']
+    telefone = request.json['telefone']
+    lance = request.json['lance']
+    modelo = request.json['modelo']
+    msg = 'Ola senhor(a) ' + nomePessoa + 'o seu lance foi ' + str(lance) + \
+        'foi aceito  e esperaramos o senhor em nossa css para comprar sua nave  '
+
+    server.sendmail('f{email}', email, msg)
+    server.quit()
+
     return jsonify(proposta.to_json()), 201
 
 
