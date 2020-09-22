@@ -7,21 +7,21 @@ git clone https://github.com/NatanaelGSSilva/backendhome
 python app.py
 
 # Routes Principais
-/carros get 
-/carros Post
-/carros/id put
-/carros/id delete
+* /carros get 
+* /carros Post
+* /carros/id put
+* /carros/id delete
 
-/marcas get
-/marcas post
+* /marcas get
+* /marcas post
 
-/propostas get
-/propostas post
-/propostas/id put
-/propostas/id delete
+* /propostas get
+* /propostas post
+* /propostas/id put
+* /propostas/id delete
 
-/usuarios get
-/usuarios post
-/login
-/logout
+* /usuarios get
+* /usuarios post
+* /login
+* /logout
 
