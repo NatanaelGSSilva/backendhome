@@ -11,15 +11,15 @@ python app.py
 * /carros Post
 * /carros/id put
 * /carros/id delete
-
+#---------------------------
 * /marcas get
 * /marcas post
-
+#---------------------------
 * /propostas get
 * /propostas post
 * /propostas/id put
 * /propostas/id delete
-
+#--------------------------
 * /usuarios get
 * /usuarios post
 * /login
